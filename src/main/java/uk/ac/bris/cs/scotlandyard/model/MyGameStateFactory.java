@@ -8,6 +8,7 @@ import com.google.common.collect.ImmutableSet;
 import uk.ac.bris.cs.scotlandyard.model.Board.GameState;
 import uk.ac.bris.cs.scotlandyard.model.ScotlandYard.Factory;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -52,7 +53,17 @@ private final class MyGameState implements GameState {
 		this.mrX = mrX;
 		this.detectives = detectives;
 		if(setup.rounds.isEmpty()) throw new IllegalArgumentException("Rounds is empty!");
-		if()
+		if(mrX == null) throw new NullPointerException("No MrX");
+		if(detectives == null) throw new NullPointerException(("No detectives"));
+		List<Piece> usedPieces = new ArrayList<>();
+		for (Player detective : detectives) {
+			Piece detectivePiece = detective.piece();
+			usedPieces.add(detectivePiece);
+			if (usedPieces.contains(detectivePiece)) {
+				throw new IllegalArgumentException("Duplicate detectives");
+			}
+		}
+
 		//
 	}
 
