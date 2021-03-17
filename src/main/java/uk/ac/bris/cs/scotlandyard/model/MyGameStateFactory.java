@@ -102,14 +102,20 @@ private final class MyGameState implements GameState {
 	@Override public GameSetup getSetup(){ return setup; }
 	@Override public ImmutableSet<Piece> getPlayers() { return remaining; }
 	@Override public Optional<Integer> getDetectiveLocation(Piece.Detective detective) {
-		return null;
+		for (Player i : detectives) {
+			if (i.piece().equals(detective))  return Optional.of(i.location());
+		}
+		return Optional.empty();
 	}
 	@Override public Optional<TicketBoard> getPlayerTickets(Piece piece) {
-		return null;
+
+		return Optional.empty();
 	}
 	@Override public ImmutableList<LogEntry> getMrXTravelLog() { return log; }
 	@Override public ImmutableSet<Piece> getWinner(){ return null; }
-	@Override public ImmutableSet<Move> getAvailableMoves() {return null; }
+	@Override public ImmutableSet<Move> getAvailableMoves() {
+
+		return null; }
 	@Override public GameState advance(Move move) {
 		if(!moves.contains(move)) throw new IllegalArgumentException("Illegal move: "+move);
 		return null;
