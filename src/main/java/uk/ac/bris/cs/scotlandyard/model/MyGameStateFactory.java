@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 
 import javax.annotation.Nonnull;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import uk.ac.bris.cs.scotlandyard.model.Board.GameState;
 import uk.ac.bris.cs.scotlandyard.model.ScotlandYard.Factory;
@@ -53,16 +54,42 @@ private final class MyGameState implements GameState {
 		this.mrX = mrX;
 		this.detectives = detectives;
 		if(setup.rounds.isEmpty()) throw new IllegalArgumentException("Rounds is empty!");
-
-
 		if(mrX == null) throw new NullPointerException("No MrX");
 		if(detectives == null) throw new NullPointerException(("No detectives"));
+		if (setup.graph.nodes().isEmpty()) throw new IllegalArgumentException("Empty graph");
+		if (getWinner() != null) throw new IllegalArgumentException("Winner is not empty");
 		List<Piece> usedPieces = new ArrayList<>();
+		List<Integer> detectiveSpawnLocations = new ArrayList<>();
 		for (Player detective : detectives) {
 			Piece detectivePiece = detective.piece();
-			usedPieces.add(detectivePiece);
 			if (usedPieces.contains(detectivePiece)) {
 				throw new IllegalArgumentException("Duplicate detectives");
+			}
+			usedPieces.add(detectivePiece);
+
+			if (detectivePiece.isMrX()) {
+				throw new IllegalArgumentException("MrX in detectives");
+			}
+
+			Integer detectiveSpawnLocation = detective.location();
+			if (detectiveSpawnLocations.contains(detectiveSpawnLocation)) {
+				throw new IllegalArgumentException("Duplicate detective spawn locations");
+			}
+			detectiveSpawnLocations.add(detectiveSpawnLocation);
+
+			if (mrX.isDetective()) {
+				throw new IllegalArgumentException("MrX is a detective");
+			}
+
+			ImmutableMap<ScotlandYard.Ticket, Integer> detectiveTickets = detective.tickets();
+			for (ScotlandYard.Ticket detectiveTicketType : detectiveTickets.keySet()) {
+				Integer detectiveTicketCount = detectiveTickets.get(detectiveTicketType);
+				if (detectiveTicketType == ScotlandYard.Ticket.SECRET && detectiveTicketCount > 0) {
+					throw new IllegalArgumentException("Detective(s) have a secret ticket");
+				}
+				if (detectiveTicketType == ScotlandYard.Ticket.DOUBLE && detectiveTicketCount > 0) {
+					throw new IllegalArgumentException("Detective(s) have a double ticket");
+				}
 			}
 		}
 
@@ -75,8 +102,7 @@ private final class MyGameState implements GameState {
 	@Override public GameSetup getSetup(){ return setup; }
 	@Override public ImmutableSet<Piece> getPlayers() { return remaining; }
 	@Override public Optional<Integer> getDetectiveLocation(Piece.Detective detective) {
-		if()
-
+		return null;
 	}
 	@Override public Optional<TicketBoard> getPlayerTickets(Piece piece) {
 		return null;
