@@ -44,12 +44,15 @@ private final class MyGameState implements GameState {
 			final ImmutableList<LogEntry> log,
 			final Player mrX,
 			final List<Player> detectives
-	) {
+	)
+	{
 		this.setup = setup;
 		this.remaining = remaining;
 		this.log = log;
 		this.mrX = mrX;
 		this.detectives = detectives;
+		if(setup.rounds.isEmpty()) throw new IllegalArgumentException("Rounds is empty!");
+		if()
 		//
 	}
 
