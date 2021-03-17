@@ -10,6 +10,7 @@ import uk.ac.bris.cs.scotlandyard.model.Board.GameState;
 import uk.ac.bris.cs.scotlandyard.model.ScotlandYard.Factory;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,7 +39,7 @@ private final class MyGameState implements GameState {
 	private List<Player> detectives;
 	private ImmutableList<Player> everyone;
 	private ImmutableSet<Move> moves;
-	private ImmutableSet<Piece> winner;
+	private ImmutableSet<Piece> winner = ImmutableSet.copyOf(new HashSet<>());
 
 	private MyGameState(
 			final GameSetup setup,
@@ -57,7 +58,6 @@ private final class MyGameState implements GameState {
 		if(mrX == null) throw new NullPointerException("No MrX");
 		if(detectives == null) throw new NullPointerException(("No detectives"));
 		if (setup.graph.nodes().isEmpty()) throw new IllegalArgumentException("Empty graph");
-		if (getWinner() != null) throw new IllegalArgumentException("Winner is not empty");
 		List<Piece> usedPieces = new ArrayList<>();
 		List<Integer> detectiveSpawnLocations = new ArrayList<>();
 		for (Player detective : detectives) {
@@ -112,7 +112,12 @@ private final class MyGameState implements GameState {
 		return Optional.empty();
 	}
 	@Override public ImmutableList<LogEntry> getMrXTravelLog() { return log; }
-	@Override public ImmutableSet<Piece> getWinner(){ return null; }
+	@Override public ImmutableSet<Piece> getWinner(){
+		if (winner != null) {
+			return winner;
+		}
+		return null;
+	}
 	@Override public ImmutableSet<Move> getAvailableMoves() {
 
 		return null; }
