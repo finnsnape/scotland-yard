@@ -65,6 +65,9 @@ private final class MyGameState implements GameState {
 	@Override public ImmutableList<LogEntry> getMrXTravelLog() { return null; }
 	@Override public ImmutableSet<Piece> getWinner(){ return null; }
 	@Override public ImmutableSet<Move> getAvailableMoves() {return null; }
-	@Override public GameState advance(Move move) { return null; }
+	@Override public GameState advance(Move move) {
+		if(!moves.contains(move)) throw new IllegalArgumentException("Illegal move: "+move);
+		return null;
+	}
 
 }}
