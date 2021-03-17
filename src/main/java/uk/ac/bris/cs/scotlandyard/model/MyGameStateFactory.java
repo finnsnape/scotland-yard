@@ -52,17 +52,22 @@ private final class MyGameState implements GameState {
 		this.mrX = mrX;
 		this.detectives = detectives;
 		if(setup.rounds.isEmpty()) throw new IllegalArgumentException("Rounds is empty!");
-		if()
+
 		//
 	}
 
 
 
-	@Override public GameSetup getSetup(){ return null; }
-	@Override public ImmutableSet<Piece> getPlayers() { return null; }
-	@Override public Optional<Integer> getDetectiveLocation(Piece.Detective detective) { return null;}
-	@Override public Optional<TicketBoard> getPlayerTickets(Piece piece) {return null;}
-	@Override public ImmutableList<LogEntry> getMrXTravelLog() { return null; }
+	@Override public GameSetup getSetup(){ return setup; }
+	@Override public ImmutableSet<Piece> getPlayers() { return remaining; }
+	@Override public Optional<Integer> getDetectiveLocation(Piece.Detective detective) {
+		if()
+
+	}
+	@Override public Optional<TicketBoard> getPlayerTickets(Piece piece) {
+		return null;
+	}
+	@Override public ImmutableList<LogEntry> getMrXTravelLog() { return log; }
 	@Override public ImmutableSet<Piece> getWinner(){ return null; }
 	@Override public ImmutableSet<Move> getAvailableMoves() {return null; }
 	@Override public GameState advance(Move move) {
