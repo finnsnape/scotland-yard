@@ -64,4 +64,4 @@ private final class MyGameState implements GameState {
 	@Override public ImmutableSet<Move> getAvailableMoves() {return null; }
 	@Override public GameState advance(Move move) { return null; }
 
-}
+}}
