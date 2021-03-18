@@ -134,7 +134,7 @@ private final class MyGameState implements GameState {
 	@Override public ImmutableList<LogEntry> getMrXTravelLog() { return log; }
 	@Override public ImmutableSet<Piece> getWinner(){ return winner; }
 	@Override public ImmutableSet<Move> getAvailableMoves() {
-		// shouldn't this onlu return moves available for the current player?
+		// shouldn't this onlu return moves available for the current player?e
 		List<Move> allMoves = new ArrayList<Move>();
 		allMoves.addAll(makeSingleMoves(setup, detectives, mrX, mrX.location()));
 		for (Player i : detectives) {
@@ -167,7 +167,7 @@ private final class MyGameState implements GameState {
 				continue; // try next destination
 			}
 			for(ScotlandYard.Transport t : setup.graph.edgeValueOrDefault(source,destination,ImmutableSet.of())) {
-				if (player.tickets().containsKey(t.requiredTicket())) {
+				if (player.tickets().containsKey(t.requiredTicket())) { // if player has required tickets
 					singleMoves.add(new Move.SingleMove(player.piece(), source, t.requiredTicket(), destination));
 				}
 			}
