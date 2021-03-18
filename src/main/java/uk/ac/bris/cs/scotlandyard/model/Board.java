@@ -1,6 +1,7 @@
 package uk.ac.bris.cs.scotlandyard.model;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 
 import java.util.Optional;
@@ -76,5 +77,16 @@ public interface Board {
 		@Nonnull GameState advance(Move move);
 	}
 
+	class MyTicketBoard implements TicketBoard {
+		private final ImmutableMap<Ticket, Integer> tickets;
+		public MyTicketBoard(ImmutableMap<Ticket, Integer> tickets) {
+			this.tickets = tickets;
+		}
+
+		@Override
+		public int getCount(@Nonnull Ticket ticket) {
+			return tickets.get(ticket);
+		}
+	}
 
 }
