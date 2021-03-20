@@ -163,14 +163,15 @@ private final class MyGameState implements GameState {
 			for (Player detective : detectives){
 				if (detective.location() == destination) {
 					isoccupied = true;
-					if (isoccupied) {
-						continue; // try next destination
-					}
+					break; // try next detective
 				}
+			}
+			if (isoccupied) {
+				continue; // try next location
 			}
 			for(ScotlandYard.Transport t : setup.graph.edgeValueOrDefault(source,destination,ImmutableSet.of())) {
 				if(player.has(t.requiredTicket())) hasticket = true;
-				if(!isoccupied && hasticket){
+				if(hasticket){
 					singleMoves.add(new Move.SingleMove(player.piece(), source, t.requiredTicket(),destination));
 				}
 			}
