@@ -176,6 +176,44 @@ private final class MyGameState implements GameState {
 		}
 		return ImmutableSet.copyOf(singleMoves);
 	}
+	private static ImmutableSet<Move.SingleMove> makeSingleMoves(
+			GameSetup setup,
+			List<Player> detectives,
+			Player player,
+			int source){
+		final var singleMoves = new ArrayList<Move.SingleMove>();
+
+		for(int destination : setup.graph.adjacentNodes(source)) {
+			boolean isoccupied = false;
+			boolean hasticket = false;
+			for (Player detective : detectives){
+				if (detective.location() == destination) {
+					isoccupied = true;
+					break;
+				}
+			}
+			for(ScotlandYard.Transport t : setup.graph.edgeValueOrDefault(source,destination,ImmutableSet.of())) {
+				if(player.has(t.requiredTicket())) hasticket = true;
+				if(!isoccupied && hasticket){
+					singleMoves.add(new Move.SingleMove(player.piece(), source, t.requiredTicket(),destination));
+				}
+			}
+			if(source == 194 && player.has(ScotlandYard.Ticket.SECRET)) singleMoves.add(new Move.SingleMove(player.piece(),source, ScotlandYard.Ticket.SECRET,157));
+			else if (source == 157 && player.hasAtLeast(ScotlandYard.Ticket.SECRET,1)) {
+				singleMoves.add(new Move.SingleMove(player.piece(), source, ScotlandYard.Ticket.SECRET, 194));
+				singleMoves.add(new Move.SingleMove(player.piece(), source, ScotlandYard.Ticket.SECRET, 115));
+			}
+			else if (source == 115 && player.hasAtLeast(ScotlandYard.Ticket.SECRET,1)) {
+				singleMoves.add(new Move.SingleMove(player.piece(), source, ScotlandYard.Ticket.SECRET, 157));
+				singleMoves.add(new Move.SingleMove(player.piece(), source, ScotlandYard.Ticket.SECRET, 108));
+			}
+			else if (source == 108 && player.hasAtLeast(ScotlandYard.Ticket.SECRET,1)) {
+				singleMoves.add(new Move.SingleMove(player.piece(), source, ScotlandYard.Ticket.SECRET, 115));
+			}
+		}
+		return ImmutableSet.copyOf(singleMoves);
+	}
+
 }
 
 
