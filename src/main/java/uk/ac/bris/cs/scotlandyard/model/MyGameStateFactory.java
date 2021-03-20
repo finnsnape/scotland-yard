@@ -190,6 +190,22 @@ private final class MyGameState implements GameState {
 		}
 		return ImmutableSet.copyOf(singleMoves);
 	}
+	private static ImmutableSet<Move.DoubleMove> makeDoubleMoves(
+			GameSetup setup,
+			List<Player> detectives,
+			Player player,
+			int source
+	){
+		final var doubleMoves = new ArrayList<Move.DoubleMove>();
+		if(player.isMrX() && player.hasAtLeast(ScotlandYard.Ticket.DOUBLE,1)){
+			for (Move.SingleMove i : makeSingleMoves(setup, detectives, player, source)) {
+				for(Move.SingleMove j : makeSingleMoves(setup, detectives, player, i.destination))
+					doubleMoves.add(new Move.DoubleMove(player.piece(), source, i.ticket,i.destination,j.ticket,j.destination));
+			}
+		}
+		return ImmutableSet.copyOf(doubleMoves);
+	}
+
 
 }
 
