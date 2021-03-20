@@ -149,33 +149,7 @@ private final class MyGameState implements GameState {
 	}
 
 }
-	private static ImmutableSet<Move.SingleMove> makeSingleMoves(
-			GameSetup setup,
-			List<Player> detectives,
-			Player player,
-			int source){
-		final var singleMoves = new ArrayList<Move.SingleMove>();
-		for(int destination : setup.graph.adjacentNodes(source)) {
-			boolean isOccupiedByDetective = false;
-			for (Player detective : detectives) {
-				if (detective.location() == destination) {
-					isOccupiedByDetective = true;
-					break;
-				}
-			}
-			if (isOccupiedByDetective) {
-				continue; // try next destination
-			}
-			for(ScotlandYard.Transport t : setup.graph.edgeValueOrDefault(source,destination,ImmutableSet.of())) {
-				if (player.tickets().containsKey(t.requiredTicket())) { // if player has required tickets
-					singleMoves.add(new Move.SingleMove(player.piece(), source, t.requiredTicket(), destination));
-				}
-			}
-			// TODO consider the rules of secret moves here
-			//  add moves to the destination via a secret ticket if there are any left with the player
-		}
-		return ImmutableSet.copyOf(singleMoves);
-	}
+
 	private static ImmutableSet<Move.SingleMove> makeSingleMoves(
 			GameSetup setup,
 			List<Player> detectives,
@@ -189,7 +163,9 @@ private final class MyGameState implements GameState {
 			for (Player detective : detectives){
 				if (detective.location() == destination) {
 					isoccupied = true;
-					break;
+					if (isoccupied) {
+						continue; // try next destination
+					}
 				}
 			}
 			for(ScotlandYard.Transport t : setup.graph.edgeValueOrDefault(source,destination,ImmutableSet.of())) {
