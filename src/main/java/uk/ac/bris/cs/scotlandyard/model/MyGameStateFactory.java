@@ -42,6 +42,7 @@ public final class MyGameStateFactory implements Factory<GameState> {
 		private ImmutableList<Player> everyone;
 		private ImmutableSet<Move> moves;
 		private ImmutableSet<Piece> winner = ImmutableSet.copyOf(new HashSet<>());
+		private int currentPlayerIndex = 0;
 
 
 		private MyGameState(
@@ -108,10 +109,10 @@ public final class MyGameStateFactory implements Factory<GameState> {
 		public ImmutableSet<Piece> getPlayers() {
 			// not sure if we should be using "remaining" here or if the detectives set will update?
 			List<Piece> allPieces = new ArrayList<>();
+			allPieces.add(mrX.piece());
 			for (Player i : detectives) {
 				allPieces.add(i.piece());
 			}
-			allPieces.add(mrX.piece());
 			return ImmutableSet.copyOf(allPieces);
 		}
 
@@ -153,11 +154,28 @@ public final class MyGameStateFactory implements Factory<GameState> {
 
 		@Override
 		public ImmutableSet<Move> getAvailableMoves() {
-			// shouldn't this onlu return moves available for the current player?e
+			System.out.println(getPlayers());
+			// shouldn't this onlu return moves available for the current player?
 			List<Move> allMoves = new ArrayList<Move>();
+			Piece currentPlayerPiece = getPlayers().asList().get(currentPlayerIndex);
+			Player currentPlayer;
+			if (currentPlayerPiece.isDetective()) {
+				currentPlayer = detectives.get(currentPlayerIndex);
+			}
+			else {
+				currentPlayer = mrX;
+			}
+			int roundsLeft = setup.rounds.size();
+			if (roundsLeft >= 2) {
+				allMoves.addAll(makeSingleMoves(setup, detectives, currentPlayer, currentPlayer.location()));
+				if (currentPlayer.isMrX()) {
+					allMoves.addAll(makeDoubleMoves(setup, detectives, currentPlayer, currentPlayer.location()));
+				}
+			}
+			else if (roundsLeft == 1) {
+				allMoves.addAll(makeSingleMoves(setup, detectives, currentPlayer, currentPlayer.location()));
+			}
 
-			allMoves.addAll(makeSingleMoves(setup, detectives, mrX, mrX.location()));
-			allMoves.addAll(makeDoubleMoves(setup, detectives, mrX, mrX.location()));
 		/* for (Player i : detectives) {
 			allMoves.addAll(makeSingleMoves(setup, detectives, i, i.location()));
 		} */
@@ -168,6 +186,7 @@ public final class MyGameStateFactory implements Factory<GameState> {
 
 		@Override
 		public GameState advance(Move move) {
+			currentPlayerIndex = (currentPlayerIndex + 1) % getPlayers().size();
 			return null;
 		}
 
