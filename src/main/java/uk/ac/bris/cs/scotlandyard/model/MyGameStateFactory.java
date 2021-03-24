@@ -6,13 +6,11 @@ import javax.annotation.Nonnull;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Sets;
 import uk.ac.bris.cs.scotlandyard.model.Board.GameState;
 import uk.ac.bris.cs.scotlandyard.model.ScotlandYard.Factory;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * cw-model
@@ -43,6 +41,7 @@ public final class MyGameStateFactory implements Factory<GameState> {
 		private ImmutableSet<Move> moves;
 		private ImmutableSet<Piece> winner = ImmutableSet.copyOf(new HashSet<>());
 		private int currentPlayerIndex = 0;
+		private HashSet<Piece> movePending = new HashSet<>();
 
 
 		private MyGameState(
@@ -154,40 +153,50 @@ public final class MyGameStateFactory implements Factory<GameState> {
 
 		@Override
 		public ImmutableSet<Move> getAvailableMoves() {
-			System.out.println(getPlayers());
-			// shouldn't this onlu return moves available for the current player?
+			if (movePending.isEmpty()) {
+				movePending.addAll(getPlayers());
+			} // messy repetition
 			List<Move> allMoves = new ArrayList<Move>();
 			Piece currentPlayerPiece = getPlayers().asList().get(currentPlayerIndex);
-			Player currentPlayer;
+			System.out.println(currentPlayerPiece);
+			List<Player> currentPlayers = new ArrayList<Player>();
 			if (currentPlayerPiece.isDetective()) {
-				currentPlayer = detectives.get(currentPlayerIndex);
+				currentPlayers = detectives;
 			}
 			else {
-				currentPlayer = mrX;
+				currentPlayers.add(mrX);
 			}
 			int roundsLeft = setup.rounds.size();
-			if (roundsLeft >= 2) {
-				allMoves.addAll(makeSingleMoves(setup, detectives, currentPlayer, currentPlayer.location()));
-				if (currentPlayer.isMrX()) {
-					allMoves.addAll(makeDoubleMoves(setup, detectives, currentPlayer, currentPlayer.location()));
+			System.out.printf("pending: %s%n", movePending);
+			for (Player currentPlayer : currentPlayers) {
+				if (!movePending.contains(currentPlayer.piece())) {
+					continue;
+				}
+				if (roundsLeft >= 2) {
+					allMoves.addAll(makeSingleMoves(setup, detectives, currentPlayer, currentPlayer.location()));
+					if (currentPlayer.isMrX()) {
+						allMoves.addAll(makeDoubleMoves(setup, detectives, currentPlayer, currentPlayer.location()));
+					}
+				}
+				else if (roundsLeft == 1) {
+					allMoves.addAll(makeSingleMoves(setup, detectives, currentPlayer, currentPlayer.location()));
 				}
 			}
-			else if (roundsLeft == 1) {
-				allMoves.addAll(makeSingleMoves(setup, detectives, currentPlayer, currentPlayer.location()));
-			}
-
-		/* for (Player i : detectives) {
-			allMoves.addAll(makeSingleMoves(setup, detectives, i, i.location()));
-		} */
-			System.out.println(ImmutableSet.copyOf(allMoves));
 			moves = ImmutableSet.copyOf(allMoves);
+			System.out.println(moves);
 			return moves;
 		}
 
 		@Override
 		public GameState advance(Move move) {
-			currentPlayerIndex = (currentPlayerIndex + 1) % getPlayers().size();
-			return null;
+			currentPlayerIndex = (currentPlayerIndex + 1) % (getPlayers().size());
+			if (movePending.isEmpty()) {
+				movePending.addAll(getPlayers());
+			}
+			else {
+				movePending.remove(move.commencedBy());
+			}
+			return this;
 		}
 
 	}
