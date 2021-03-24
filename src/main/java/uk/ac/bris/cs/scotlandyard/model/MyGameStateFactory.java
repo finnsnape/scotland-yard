@@ -56,8 +56,7 @@ public final class MyGameStateFactory implements Factory<GameState> {
 			this.log = log;
 			this.mrX = mrX;
 			this.detectives = detectives;
-
-
+			movePending.addAll(getPlayers());
 			if (setup.rounds.isEmpty()) throw new IllegalArgumentException("Rounds is empty!");
 			if (mrX == null) throw new NullPointerException("No MrX");
 			if (detectives == null) throw new NullPointerException(("No detectives"));
@@ -153,9 +152,6 @@ public final class MyGameStateFactory implements Factory<GameState> {
 
 		@Override
 		public ImmutableSet<Move> getAvailableMoves() {
-			if (movePending.isEmpty()) {
-				movePending.addAll(getPlayers());
-			} // messy repetition
 			List<Move> allMoves = new ArrayList<Move>();
 			Piece currentPlayerPiece = getPlayers().asList().get(currentPlayerIndex);
 			System.out.println(currentPlayerPiece);
@@ -170,7 +166,7 @@ public final class MyGameStateFactory implements Factory<GameState> {
 			System.out.printf("pending: %s%n", movePending);
 			for (Player currentPlayer : currentPlayers) {
 				if (!movePending.contains(currentPlayer.piece())) {
-					continue;
+					continue; // messy
 				}
 				if (roundsLeft >= 2) {
 					allMoves.addAll(makeSingleMoves(setup, detectives, currentPlayer, currentPlayer.location()));
@@ -190,12 +186,7 @@ public final class MyGameStateFactory implements Factory<GameState> {
 		@Override
 		public GameState advance(Move move) {
 			currentPlayerIndex = (currentPlayerIndex + 1) % (getPlayers().size());
-			if (movePending.isEmpty()) {
-				movePending.addAll(getPlayers());
-			}
-			else {
-				movePending.remove(move.commencedBy());
-			}
+			movePending.remove(move.commencedBy());
 			return this;
 		}
 
