@@ -58,6 +58,7 @@ public final class MyGameStateFactory implements Factory<GameState> {
 			this.detectives = detectives;
 
 
+
 			if (setup.rounds.isEmpty()) throw new IllegalArgumentException("Rounds is empty!");
 			if (mrX == null) throw new NullPointerException("No MrX");
 			if (detectives == null) throw new NullPointerException(("No detectives"));
@@ -156,11 +157,21 @@ public final class MyGameStateFactory implements Factory<GameState> {
 			// shouldn't this onlu return moves available for the current player?e
 			List<Move> allMoves = new ArrayList<Move>();
 
+			setup.rounds.size();
 			allMoves.addAll(makeSingleMoves(setup, detectives, mrX, mrX.location()));
-			allMoves.addAll(makeDoubleMoves(setup, detectives, mrX, mrX.location()));
+			allMoves.addAll(makeDoubleMoves(setup,detectives,mrX, mrX.location()));
+
+
+				for (Player i : detectives) {
+					allMoves.addAll(makeSingleMoves(setup, detectives, i, i.location()));
+				}
+			
+
+
 		/* for (Player i : detectives) {
 			allMoves.addAll(makeSingleMoves(setup, detectives, i, i.location()));
 		} */
+
 			System.out.println(ImmutableSet.copyOf(allMoves));
 			moves = ImmutableSet.copyOf(allMoves);
 			return moves;
@@ -168,6 +179,8 @@ public final class MyGameStateFactory implements Factory<GameState> {
 
 		@Override
 		public GameState advance(Move move) {
+			if(!moves.contains(move)) throw new IllegalArgumentException("Illegal move: "+move);
+
 			return null;
 		}
 
@@ -213,7 +226,6 @@ public final class MyGameStateFactory implements Factory<GameState> {
 	) {
 		final var doubleMoves = new ArrayList<Move.DoubleMove>();
 
-
 			if (player.isMrX() && player.hasAtLeast(ScotlandYard.Ticket.DOUBLE, 1)) {
 				for (Move.SingleMove i : makeSingleMoves(setup, detectives, player, source)) {
 					for (Move.SingleMove j : makeSingleMoves(setup, detectives, player, i.destination)) {
@@ -225,7 +237,7 @@ public final class MyGameStateFactory implements Factory<GameState> {
 					}
 				}
 			}
-		
+
 		return ImmutableSet.copyOf(doubleMoves);
 	}
 }
