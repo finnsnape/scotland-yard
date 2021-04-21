@@ -40,7 +40,7 @@ public final class MyGameStateFactory implements Factory<GameState> {
 		private ImmutableList<Player> everyone;
 		private ImmutableSet<Move> moves;
 		private ImmutableSet<Piece> winner;
-		private Boolean mrXstuck = false;
+
 
 
 		private MyGameState(
@@ -123,7 +123,7 @@ public final class MyGameStateFactory implements Factory<GameState> {
 
 		@Override
 		public Optional<TicketBoard> getPlayerTickets(Piece piece) {
-			// I think we need to code TicketBoard before this will pass?
+
 			if (!(getPlayers().contains(piece))) {
 				return Optional.empty();
 			}
@@ -146,61 +146,70 @@ public final class MyGameStateFactory implements Factory<GameState> {
 
 		@Override
 		public ImmutableSet<Piece> getWinner() {
-			Set<Piece> newWinner = new HashSet<>();
+			getAvailableMoves();
 
-			Set<Piece> detectivewinners = new HashSet<>();
-
-			for (Player j : detectives){
-				detectivewinners.add(j.piece());
-			}
-			if(log.size() == setup.rounds.size() && remaining.contains(mrX.piece())) {
-				newWinner.add(mrX.piece());
-				return ImmutableSet.copyOf(newWinner);
-			}
-			for(Player i : detectives){
-				if(i.location() == mrX.location()){
-					newWinner.addAll(detectivewinners);
-					break;
-				}
-			}
-			if(remaining.contains(mrX.piece())){
-				if(getAvailableMoves().isEmpty()) {
-					newWinner.addAll(detectivewinners);
-					mrXstuck = true;
-				}
-
-			}
-			
-			System.out.println(newWinner);
-			winner = ImmutableSet.copyOf(newWinner);
-			return winner;
+			return this.winner;
 
 		}
 
 		@Override
 		public ImmutableSet<Move> getAvailableMoves() {
 			List<Move> allMoves = new ArrayList<Move>();
-			if(mrXstuck) return ImmutableSet.copyOf(allMoves);
-			//if(!getWinner().isEmpty() ) return ImmutableSet.copyOf(allMoves);
+			Set<Piece> newWinner = new HashSet<Piece>();
 
-
-			int roundleft = setup.rounds.size();
-			if(remaining.contains(mrX.piece())){
-				if(roundleft >= 2){
-					allMoves.addAll(makeSingleMoves(setup,detectives,mrX, mrX.location()));
-					allMoves.addAll(makeDoubleMoves(setup,detectives,mrX,mrX.location()));
-				}
-				else if(roundleft == 1) allMoves.addAll(makeSingleMoves(setup,detectives,mrX,mrX.location()));
+			Set<Piece> detectiveWinners = new HashSet<>();
+			for (Player j : detectives){
+				detectiveWinners.add(j.piece());
 			}
-			else{
-				for(Player i : detectives){
-					if(remaining.contains(i.piece())) {
-						allMoves.addAll(makeSingleMoves(setup, detectives, i, i.location()));
+
+			if(log.size() == setup.rounds.size() && remaining.contains(mrX.piece())) {
+				newWinner.add(mrX.piece());
+			} //check if mrX already escaped
+
+			for(Player i : detectives){
+				if(i.location() == mrX.location()){
+					newWinner.addAll(detectiveWinners);
+					break;
+				}
+			} // check if any detective catches mrX
+
+			List<Move> allmovesofDec = new ArrayList<>();
+			for(Player i : detectives){
+
+				allmovesofDec.addAll(makeSingleMoves(setup,detectives,i,i.location()));
+
+			}
+			if(allmovesofDec.isEmpty()){  //check if all detectives got stuck
+				newWinner.add(mrX.piece());
+			}
+
+			if(newWinner.isEmpty()) {
+				int roundleft = setup.rounds.size();
+				if(remaining.contains(mrX.piece())){
+					if(roundleft >= 2){
+						allMoves.addAll(makeSingleMoves(setup,detectives,mrX, mrX.location()));
+						allMoves.addAll(makeDoubleMoves(setup,detectives,mrX,mrX.location()));
+					}
+					else if(roundleft == 1) allMoves.addAll(makeSingleMoves(setup,detectives,mrX,mrX.location()));
+					if(allMoves.isEmpty())  {
+						newWinner.addAll(detectiveWinners);
+					}
+				}
+				else{
+					for(Player i : detectives){
+						if(remaining.contains(i.piece())) {
+							allMoves.addAll(makeSingleMoves(setup, detectives, i, i.location()));
+						}
 					}
 				}
 			}
+
+			this.winner = ImmutableSet.copyOf(newWinner);
+
+			List<Move> emptyMove = new ArrayList<>();
+			if(!winner.isEmpty()) return ImmutableSet.copyOf(emptyMove);
 			moves = ImmutableSet.copyOf(allMoves);
-			System.out.println(moves);
+
 			return moves;
 		}
 
@@ -225,6 +234,8 @@ public final class MyGameStateFactory implements Factory<GameState> {
 				}
 			});
 
+
+
 			if (currentPlayer.isMrX()) {
 				mrX = mrX.use(move.tickets()).at(des);
 				newdetectives.addAll(detectives);
@@ -248,6 +259,19 @@ public final class MyGameStateFactory implements Factory<GameState> {
 					}
 					else newdetectives.add(i);
 				}
+
+				//skip the remaining detective players if they got stuck
+				List<Move> remainingMoves = new ArrayList<>();
+				for(Player i : detectives){
+					if(newremaining.contains(i.piece())) {
+						remainingMoves.addAll(makeSingleMoves(setup, detectives, i, i.location()));
+					}
+				}
+				if(!newremaining.isEmpty() && remainingMoves.isEmpty()) {
+					newremaining.clear();
+					newremaining.add(mrX.piece());
+				}//skip the remaining detective players if they got stuck
+
 				if(newremaining.isEmpty()) newremaining.add(mrX.piece());
 
 			}

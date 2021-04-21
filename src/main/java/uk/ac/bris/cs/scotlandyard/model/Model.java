@@ -27,6 +27,7 @@ public interface Model {
 		 */
 		default void onModelChanged(@Nonnull Board board, @Nonnull Event event) {}
 	}
+
 	/**
 	 * @return the current game board
 	 */
