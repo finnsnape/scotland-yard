@@ -72,7 +72,7 @@ public class GameStatePlayerTest extends ParameterisedModelTestBase {
 
 		state = state.advance(x2(MRX, 45, TAXI, 46, TAXI, 47));
 		state = state.advance(taxi(BLUE, 94, 95));
-		assertThat(state.getMrXTravelLog()).last().isEqualTo(LogEntry.reveal(TAXI, 47));
+ 		assertThat(state.getMrXTravelLog()).last().isEqualTo(LogEntry.reveal(TAXI, 47));
 	}
 
 	@Test public void testMrXCorrectTicketDecrementsAfterDoubleMove() {

@@ -55,7 +55,9 @@ public interface Move extends Serializable {
 		 * @return the return value
 		 */
 		T visit(DoubleMove move);
+
 	}
+
 
 	/**
 	 * A visitor adapter that takes two {@link Function}s and turn them into visitors.
@@ -94,6 +96,7 @@ public interface Move extends Serializable {
 			this.source = source;
 			this.ticket = Objects.requireNonNull(ticket);
 			this.destination = destination;
+
 		}
 		@Nonnull @Override public Piece commencedBy() { return piece; }
 		@Nonnull @Override public Iterable<Ticket> tickets() { return ImmutableList.of(ticket); }
@@ -106,6 +109,7 @@ public interface Move extends Serializable {
 			return source == that.source && destination == that.destination &&
 					piece == that.piece && ticket == that.ticket;
 		}
+
 		@Override public int hashCode() { return Objects.hash(piece, ticket, destination); }
 		@Override public String toString() {
 			return ticket.name() + "(" + piece + "@" + source + ", " + destination + ")";
