@@ -19,8 +19,10 @@ public final class MyModelFactory implements Factory<Model> {
 	@Nonnull @Override public Model build(GameSetup setup,
 	                                      Player mrX,
 	                                      ImmutableList<Player> detectives) {
+
 		MyGameStateFactory myGame = new MyGameStateFactory();
 		Board.GameState myGamestate = myGame.build(setup,mrX,detectives);
+
 		return new myModel(myGamestate);
 	}
 	final class myModel implements Model{
@@ -57,7 +59,7 @@ public final class MyModelFactory implements Factory<Model> {
 		}
 
 		public void chooseMove(@Nonnull Move move) {
-			myGamestate.advance(move);
+			myGamestate = myGamestate.advance(move);
 			Set<Observer> Observers = getObservers();
 			Board newBoard = getCurrentBoard();
 			if(myGamestate.getWinner().isEmpty()) {
