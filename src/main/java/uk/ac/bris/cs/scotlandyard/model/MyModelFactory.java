@@ -28,28 +28,23 @@ public final class MyModelFactory implements Factory<Model> {
 	final class myModel implements Model{
 		private Board.GameState myGamestate;
 		private Set<Observer> Observers = new HashSet<>();
-		@Nonnull
 
-		private myModel(
-				final Board.GameState myGamestate
-				){
+		private myModel(final Board.GameState myGamestate) {
 			this.myGamestate = myGamestate;
 		}
 		public Board getCurrentBoard() {
-
 			return this.myGamestate;
 		}
 
 		public void registerObserver(Observer observer) {
-			if(observer == null) throw new NullPointerException();
+			if(observer == null) throw new NullPointerException(); // check it exists then register an observer
 			if(Observers.contains(observer)) throw new IllegalArgumentException();
 			this.Observers.add(observer);
 		}
 
 		public void unregisterObserver(Observer observer) {
-			if(observer == null) throw new NullPointerException();
+			if(observer == null) throw new NullPointerException(); // check it exists then unregister an observer
 			if(!Observers.contains(observer)) throw new IllegalArgumentException();
-
 			this.Observers.remove(observer);
 		}
 
@@ -63,12 +58,12 @@ public final class MyModelFactory implements Factory<Model> {
 			Set<Observer> Observers = getObservers();
 			Board newBoard = getCurrentBoard();
 			if(myGamestate.getWinner().isEmpty()) {
-				for(Observer i : Observers){
+				for(Observer i : Observers){ // if not over, register moves made
 					i.onModelChanged(newBoard, Observer.Event.MOVE_MADE);
 				}
 			}
 			else{
-				for(Observer i : Observers){
+				for(Observer i : Observers){ // if over, register game over
 					i.onModelChanged(newBoard, Observer.Event.GAME_OVER);
 				}
 			}

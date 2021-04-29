@@ -81,12 +81,12 @@ public interface Board {
 		private final ImmutableMap<Ticket, Integer> tickets;
 		public MyTicketBoard(ImmutableMap<Ticket, Integer> tickets) {
 			this.tickets = tickets;
-		}
+		} // initialise ticketboard with given tickets
 
 		@Override
 		public int getCount(@Nonnull Ticket ticket) {
 			return tickets.get(ticket);
-		}
+		} // returns count of specific ticket type for that player
 	}
 
 }
