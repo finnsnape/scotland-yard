@@ -218,15 +218,13 @@ public final class MyGameStateFactory implements Factory<GameState> {
 			List<LogEntry> newlog = new ArrayList<>();
 			newremaining.addAll(remaining);
 			newlog.addAll(log);
-			Integer des = move.visit(new Move.Visitor<>(){ // maybe replace with FunctionalVisitor?
-				@Override public Integer visit(Move.SingleMove singleMove){
-					return singleMove.destination;
-				}
-				@Override public Integer visit(Move.DoubleMove doubleMove){
-					return doubleMove.destination2;
-				}
-			}); // gets destination of move
-
+			int des;
+			if (move instanceof Move.SingleMove) { // get destination if single move made
+				des = ((Move.SingleMove) move).destination;
+			}
+			else { // get destination if double move made
+				des = ((Move.DoubleMove) move).destination2;
+			}
 
 			newremaining.remove(move.commencedBy()); // remove whoever made the move
 			if (currentPlayer.isMrX()) {
