@@ -246,16 +246,16 @@ public final class MyGameStateFactory implements Factory<GameState> {
 				List<Move> remainingMoves = new ArrayList<>();
 				for(Player i : detectives){
 					if(newRemaining.contains(i.piece())) {
-						remainingMoves.addAll(makeSingleMoves(setup, detectives, i, i.location()));
+						remainingMoves.addAll(makeSingleMoves(setup, detectives, i, i.location())); // added all the moves of detectives that haven't moved
 					}
 				}
-				if(!newRemaining.isEmpty() && remainingMoves.isEmpty()) {
+				if(!newRemaining.isEmpty() && remainingMoves.isEmpty()) { //if the remaining detectives cannot move, skip to next round
 					newRemaining.clear();
 					newRemaining.add(mrX.piece());
 				}
 
 				if(newRemaining.isEmpty()) {
-					newRemaining.add(mrX.piece());
+					newRemaining.add(mrX.piece()); //added mrX to start a new round
 				}
 
 			}
