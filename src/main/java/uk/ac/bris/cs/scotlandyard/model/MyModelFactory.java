@@ -30,41 +30,42 @@ public final class MyModelFactory implements Factory<Model> {
 		private Set<Observer> Observers = new HashSet<>();
 
 		private myModel(final Board.GameState myGamestate) {
-			this.myGamestate = myGamestate;
+			this.myGamestate = myGamestate; //initialise the game state
 		}
 		public Board getCurrentBoard() {
-			return this.myGamestate;
+			return this.myGamestate; // get the current game board
 		}
 
 		public void registerObserver(Observer observer) {
 			if(observer == null) throw new NullPointerException(); // check it exists then register an observer
-			if(Observers.contains(observer)) throw new IllegalArgumentException();
+			if(Observers.contains(observer)) throw new IllegalArgumentException(); // make sure the registered observer not exist
 			this.Observers.add(observer);
 		}
 
 		public void unregisterObserver(Observer observer) {
 			if(observer == null) throw new NullPointerException(); // check it exists then unregister an observer
-			if(!Observers.contains(observer)) throw new IllegalArgumentException();
+			if(!Observers.contains(observer)) throw new IllegalArgumentException(); // make sure the unregistered observer is in the list
 			this.Observers.remove(observer);
 		}
 
 		@Nonnull
 		public ImmutableSet<Observer> getObservers() {
-			return ImmutableSet.copyOf(this.Observers);
+			return ImmutableSet.copyOf(this.Observers); // return the current observers that are registered
 		}
 
 		public void chooseMove(@Nonnull Move move) {
 			myGamestate = myGamestate.advance(move);
 			Set<Observer> Observers = getObservers();
 			Board newBoard = getCurrentBoard();
+			//first check if theres a winner
 			if(myGamestate.getWinner().isEmpty()) {
 				for(Observer i : Observers){ // if not over, register moves made
-					i.onModelChanged(newBoard, Observer.Event.MOVE_MADE);
+					i.onModelChanged(newBoard, Observer.Event.MOVE_MADE); // update the move that has been made
 				}
 			}
 			else{
 				for(Observer i : Observers){ // if over, register game over
-					i.onModelChanged(newBoard, Observer.Event.GAME_OVER);
+					i.onModelChanged(newBoard, Observer.Event.GAME_OVER); // someone has won the game, game over
 				}
 			}
 		}
