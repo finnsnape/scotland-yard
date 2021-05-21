@@ -81,7 +81,7 @@ public interface Board {
 		private final ImmutableMap<Ticket, Integer> tickets;
 		public MyTicketBoard(ImmutableMap<Ticket, Integer> tickets) {
 			this.tickets = tickets;
-		} // initialise ticketboard with given tickets
+		} // initialise ticketboard with supplied tickets
 
 		@Override
 		public int getCount(@Nonnull Ticket ticket) {
