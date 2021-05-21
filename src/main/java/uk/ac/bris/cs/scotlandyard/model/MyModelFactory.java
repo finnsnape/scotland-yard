@@ -30,7 +30,7 @@ public final class MyModelFactory implements Factory<Model> {
 		private Set<Observer> Observers = new HashSet<>();
 
 		private myModel(final Board.GameState myGamestate) {
-			this.myGamestate = myGamestate; //initialise the game state
+			this.myGamestate = myGamestate; // initialise the game state
 		}
 		public Board getCurrentBoard() {
 			return this.myGamestate; // get the current game board
@@ -38,13 +38,13 @@ public final class MyModelFactory implements Factory<Model> {
 
 		public void registerObserver(Observer observer) {
 			if(observer == null) throw new NullPointerException(); // check it exists then register an observer
-			if(Observers.contains(observer)) throw new IllegalArgumentException(); // make sure the registered observer not exist
+			if(Observers.contains(observer)) throw new IllegalArgumentException(); // make sure the registered observer does not already exist
 			this.Observers.add(observer);
 		}
 
 		public void unregisterObserver(Observer observer) {
 			if(observer == null) throw new NullPointerException(); // check it exists then unregister an observer
-			if(!Observers.contains(observer)) throw new IllegalArgumentException(); // make sure the unregistered observer is in the list
+			if(!Observers.contains(observer)) throw new IllegalArgumentException();// make sure the registered observer does not already exist
 			this.Observers.remove(observer);
 		}
 
@@ -57,7 +57,7 @@ public final class MyModelFactory implements Factory<Model> {
 			myGamestate = myGamestate.advance(move);
 			Set<Observer> Observers = getObservers();
 			Board newBoard = getCurrentBoard();
-			//first check if theres a winner
+			// first check if there's a winner
 			if(myGamestate.getWinner().isEmpty()) {
 				for(Observer i : Observers){ // if not over, register moves made
 					i.onModelChanged(newBoard, Observer.Event.MOVE_MADE); // update the move that has been made
